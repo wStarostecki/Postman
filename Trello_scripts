@@ -1,0 +1,539 @@
+{
+	"info": {
+		"_postman_id": "e585369d-2f42-4a27-80ec-7503ba59d42b",
+		"name": "Trello - scripts",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40985043"
+	},
+	"item": [
+		{
+			"name": "Board_info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let idTablicy;\r",
+							"\r",
+							"pm.test(\"Pobranie id tablicy\", function(){\r",
+							"    idTablicy = pm.response.json().id\r",
+							"    console.log(idTablicy)\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Stworzenie zmiennej kolekcji z id tablicy\", function(){\r",
+							"    pm.collectionVariables.set(\"idTablicy\", idTablicy)\r",
+							"\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Url}}/boards/{{idTablicy}}?{{keyAPI}}&{{tokenAPI}}",
+					"host": [
+						"{{Url}}"
+					],
+					"path": [
+						"boards",
+						"{{idTablicy}}"
+					],
+					"query": [
+						{
+							"key": "{{keyAPI}}",
+							"value": null
+						},
+						{
+							"key": "{{tokenAPI}}",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Lists",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let list_1;\r",
+							"let list_2;\r",
+							"let list_3;\r",
+							"\r",
+							"pm.test(\"Pobieranie id list\", function(){\r",
+							"    list_1 = pm.response.json()[0].id;\r",
+							"    list_2 = pm.response.json()[1].id;\r",
+							"    list_3 = pm.response.json()[2].id;\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Tworzenie zmiennych kolekcji id list\", function(){\r",
+							"    pm.collectionVariables.set(\"idlist_1\", list_1)\r",
+							"    pm.collectionVariables.set(\"idlist_2\", list_2)\r",
+							"    pm.collectionVariables.set(\"idlist_3\", list_3)\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.trello.com/1/boards/{{idTablicy}}/lists/?{{keyAPI}}&{{tokenAPI}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"boards",
+						"{{idTablicy}}",
+						"lists",
+						""
+					],
+					"query": [
+						{
+							"key": "{{keyAPI}}",
+							"value": null
+						},
+						{
+							"key": "{{tokenAPI}}",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Card_generator",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let Nazwa_karty;\r",
+							"let cardNumber = pm.collectionVariables.get(\"licznik\") || 0;\r",
+							"pm.test(\"Generator nazw karty\", function(){\r",
+							"    cardNumber++;\r",
+							"    pm.collectionVariables.set(\"licznik\", cardNumber);\r",
+							"    Nazwa_karty = \"Zgłoszenie nr \" + pm.collectionVariables.get(\"licznik\");\r",
+							"    pm.collectionVariables.set(\"Nazwa_karty\", Nazwa_karty);\r",
+							"    \r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{Url}}/cards?idList={{idlist_1}}&{{keyAPI}}&{{tokenAPI}}&name={{Nazwa_karty}}",
+					"host": [
+						"{{Url}}"
+					],
+					"path": [
+						"cards"
+					],
+					"query": [
+						{
+							"key": "idList",
+							"value": "{{idlist_1}}"
+						},
+						{
+							"key": "{{keyAPI}}",
+							"value": null
+						},
+						{
+							"key": "{{tokenAPI}}",
+							"value": null
+						},
+						{
+							"key": "name",
+							"value": "{{Nazwa_karty}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get_cards",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Pobieranie id kart zgłoszeń\", function(){\r",
+							"    let id_card = pm.response.json()[pm.collectionVariables.get(\"licznik\")-1].id;\r",
+							"    console.log(id_card)\r",
+							"    pm.collectionVariables.set(\"idKarty\", id_card);\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Url}}/lists/{{idlist_1}}/cards?{{keyAPI}}&{{tokenAPI}}",
+					"host": [
+						"{{Url}}"
+					],
+					"path": [
+						"lists",
+						"{{idlist_1}}",
+						"cards"
+					],
+					"query": [
+						{
+							"key": "{{keyAPI}}",
+							"value": null
+						},
+						{
+							"key": "{{tokenAPI}}",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create_checklist_on_card",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let Nazwa_checklisty;\r",
+							"let checklistNumber = pm.collectionVariables.get(\"licznik2\") || 0;\r",
+							"pm.test(\"Generator nazw checklisty\", function(){\r",
+							"    checklistNumber++;\r",
+							"    pm.collectionVariables.set(\"licznik2\", checklistNumber);\r",
+							"    Nazwa_checklisty = \"Lista nr \" + pm.collectionVariables.get(\"licznik2\");\r",
+							"    pm.collectionVariables.set(\"Checklista\", Nazwa_checklisty);\r",
+							"    \r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Pobieranie id checklist\", function(){\r",
+							"    let id_checklist = pm.response.json().id;\r",
+							"    console.log(id_checklist);\r",
+							"   pm.collectionVariables.set(\"idChecklisty\", id_checklist);\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{Url}}/cards/{{idKarty}}/checklists?{{keyAPI}}&{{tokenAPI}}&name={{Checklista}}",
+					"host": [
+						"{{Url}}"
+					],
+					"path": [
+						"cards",
+						"{{idKarty}}",
+						"checklists"
+					],
+					"query": [
+						{
+							"key": "{{keyAPI}}",
+							"value": null
+						},
+						{
+							"key": "{{tokenAPI}}",
+							"value": null
+						},
+						{
+							"key": "name",
+							"value": "{{Checklista}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Checkitem_1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let Nazwa_checkitem;\r",
+							"let checkitemNumber = pm.collectionVariables.get(\"licznik3\") || 0;\r",
+							"pm.test(\"Generator nazw checkitemu\", function(){\r",
+							"    checkitemNumber++;\r",
+							"    pm.collectionVariables.set(\"licznik3\", checkitemNumber);\r",
+							"    Nazwa_checkitem = \"Zadanie nr \" + pm.collectionVariables.get(\"licznik3\");\r",
+							"    pm.collectionVariables.set(\"Check_item\", Nazwa_checkitem);\r",
+							"    \r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{Url}}/checklists/{{idChecklisty}}/checkItems?name={{Check_item}}&{{keyAPI}}&{{tokenAPI}}",
+					"host": [
+						"{{Url}}"
+					],
+					"path": [
+						"checklists",
+						"{{idChecklisty}}",
+						"checkItems"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "{{Check_item}}"
+						},
+						{
+							"key": "{{keyAPI}}",
+							"value": null
+						},
+						{
+							"key": "{{tokenAPI}}",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "checkitem_2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let Nazwa_checkitem;\r",
+							"let checkitemNumber = pm.collectionVariables.get(\"licznik3\") || 0;\r",
+							"pm.test(\"Generator nazw checkitemu\", function(){\r",
+							"    checkitemNumber++;\r",
+							"    pm.collectionVariables.set(\"licznik3\", checkitemNumber);\r",
+							"    Nazwa_checkitem = \"Zadanie nr \" + pm.collectionVariables.get(\"licznik3\");\r",
+							"    pm.collectionVariables.set(\"Check_item\", Nazwa_checkitem);\r",
+							"    \r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{Url}}/checklists/{{idChecklisty}}/checkItems?name={{Check_item}}&{{keyAPI}}&{{tokenAPI}}",
+					"host": [
+						"{{Url}}"
+					],
+					"path": [
+						"checklists",
+						"{{idChecklisty}}",
+						"checkItems"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "{{Check_item}}"
+						},
+						{
+							"key": "{{keyAPI}}",
+							"value": null
+						},
+						{
+							"key": "{{tokenAPI}}",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "checkitem_3",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let Nazwa_checkitem;\r",
+							"let checkitemNumber = pm.collectionVariables.get(\"licznik3\") || 0;\r",
+							"pm.test(\"Generator nazw checkitemu\", function(){\r",
+							"    checkitemNumber++;\r",
+							"    pm.collectionVariables.set(\"licznik3\", checkitemNumber);\r",
+							"    Nazwa_checkitem = \"Zadanie nr \" + pm.collectionVariables.get(\"licznik3\");\r",
+							"    pm.collectionVariables.set(\"Check_item\", Nazwa_checkitem);\r",
+							"    \r",
+							"})\r",
+							"\r",
+							"function Zeruj_licznik3(){\r",
+							"    pm.collectionVariables.set(\"licznik3\", 0);\r",
+							"}\r",
+							"Zeruj_licznik3();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{Url}}/checklists/{{idChecklisty}}/checkItems?name={{Check_item}}&{{keyAPI}}&{{tokenAPI}}",
+					"host": [
+						"{{Url}}"
+					],
+					"path": [
+						"checklists",
+						"{{idChecklisty}}",
+						"checkItems"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "{{Check_item}}"
+						},
+						{
+							"key": "{{keyAPI}}",
+							"value": null
+						},
+						{
+							"key": "{{tokenAPI}}",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "Url",
+			"value": "https://api.trello.com/1",
+			"type": "string"
+		},
+		{
+			"key": "keyAPI",
+			"value": "xx",
+			"type": "string"
+		},
+		{
+			"key": "idTablicy",
+			"value": ""
+		},
+		{
+			"key": "tokenAPI",
+			"value": "xx",
+			"type": "string"
+		},
+		{
+			"key": "idlist_1",
+			"value": ""
+		},
+		{
+			"key": "idlist_2",
+			"value": ""
+		},
+		{
+			"key": "idlist_3",
+			"value": ""
+		},
+		{
+			"key": "Nazwa_karty",
+			"value": ""
+		},
+		{
+			"key": "idKarty",
+			"value": ""
+		},
+		{
+			"key": "licznik2",
+			"value": ""
+		},
+		{
+			"key": "Checklista",
+			"value": ""
+		},
+		{
+			"key": "licznik3",
+			"value": ""
+		},
+		{
+			"key": "Check_item",
+			"value": ""
+		},
+		{
+			"key": "idChecklisty",
+			"value": ""
+		},
+		{
+			"key": "licznik",
+			"value": ""
+		}
+	]
+}
